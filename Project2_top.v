@@ -1,7 +1,7 @@
 // ECEN2350 Project 2 - Spring 2019
 // University of Colorado, Boulder
 //
-// Name: Addison Conzet
+// Name: Addison Conzet, Mark Chernyshov, Madison Chodikov
 //
 
 
