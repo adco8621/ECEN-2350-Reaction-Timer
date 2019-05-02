@@ -27,7 +27,7 @@ module Project2_top(
 //////////////// variables /////////////////////////////////////////////
 reg [2:0] state;                               // State
 reg [15:0] prev_score, hi_score ;              // Scores. 
-reg lfsr_met, init;                            // lfsr time val met, var for initializing values
+reg lfsr_met, ini;                             // lfsr time val met, var for initializing values
 wire msClk;                                    // clock in ms
 wire [13:0] elapsed;                           // ms passed
 wire [11:0] lfsrOut;                           // lfsr value
@@ -54,6 +54,12 @@ ssDisp pp3 ({1'b1,prev_bcd[15:12]},pr3);
 ssDisp pp2 ({1'b0,prev_bcd[11:8]},pr2);
 ssDisp pp1 ({1'b0,prev_bcd[7:4]},pr1);
 ssDisp pp0 ({1'b0,prev_bcd[3:0]},pr0);
+
+initial 
+begin
+	hi_score = 9999;
+	prev_score = 9999;
+end
 
 ///////////// assigning outputs ////////////////////////////
 assign HEX3 = hex3;
@@ -88,15 +94,6 @@ begin
 	else
 		lfsr_met = 0;
 		
-	if (~init && elapsed == 2) begin    // initializing block (doesn't seem to work for scores at least)
-		state = zero;
-		prev_score = 9999; // max counter score so easy to beat
-		hi_score = 9999;
-		lfsr_met = 0;
-		led_reg = 10'b0000000000;
-		init = 1;
-	end
-
 //////////////////// state machine //////////////////////////
 	case(state)
 		zero:
@@ -167,10 +164,10 @@ begin
 		three:
 		begin
 			if (three2zero) begin // once correct switch is flipped
-				prev_score = elapsed - current_lfsr; // set score to time passed since light came on (malfunctioning)
+				prev_score <= elapsed - current_lfsr; // set score to time passed since light came on
 				
-				if(prev_score < hi_score) // check if new high score
-					hi_score = prev_score;
+				if (prev_score < hi_score)
+					hi_score <= prev_score;
 					
 				state = zero; // back to idle state
 			end
