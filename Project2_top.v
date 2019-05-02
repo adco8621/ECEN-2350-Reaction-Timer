@@ -55,6 +55,7 @@ ssDisp pp2 ({1'b0,prev_bcd[11:8]},pr2);
 ssDisp pp1 ({1'b0,prev_bcd[7:4]},pr1);
 ssDisp pp0 ({1'b0,prev_bcd[3:0]},pr0);
 
+//////// setting initial scores as easy to beat ////////////
 initial 
 begin
 	hi_score = 9999;
@@ -99,37 +100,37 @@ begin
 		zero:
 		begin
 			if (zero2one)  // press and hold key 0 to enter ready state
-				state = one;
+				state <= one;
 			else if (zero2four) // press and hold key 1 to enter high score display mode
-				state = four;
+				state <= four;
 		
-			hex0 = pr0;  // assigning display values
-			hex1 = pr1;
-			hex2 = pr2;
-			hex3 = pr3;
+			hex0 <= pr0;  // assigning display values
+			hex1 <= pr1;
+			hex2 <= pr2;
+			hex3 <= pr3;
 			led_reg = 10'b0000000000; // reseting LEDs back to off
 		end
 		
 		one:
 		begin
 			if (one2two) begin // release key 0 to enter random timer mode
-				state = two;
+				state <= two;
 				current_lfsr = lfsrOut; // takes current lfsr out for the random timer
 			end
 		
-			hex0 = 8'b11000000; // display all 0
-			hex1 = 8'b11000000;
-			hex2 = 8'b11000000;
-			hex3 = 8'b11000000;
+			hex0 <= 8'b11000000; // display all 0
+			hex1 <= 8'b11000000;
+			hex2 <= 8'b11000000;
+			hex3 <= 8'b11000000;
 		end
 		
 		two:
 		begin
 			if (two2zero) // press key 1 to go back to idle state
-				state = zero;
+				state <= zero;
 				
 			else if (two2one) // key 0 or any switches set it back to ready state
-				state = one;
+				state <= one;
 				
 			else if (two2three) begin  // turn on a light based on lfsr value and reset counter
 				if(current_lfsr < 400)
@@ -152,13 +153,13 @@ begin
 					led_reg[8] = 1;
 				else if(current_lfsr >= 3600 && current_lfsr < 4000)
 					led_reg[9] = 1;
-				state = three;
+				state <= three;
 			end
 		
-			hex0 = 8'b11000000;  // display all 0
-			hex1 = 8'b11000000;
-			hex2 = 8'b11000000;
-			hex3 = 8'b11000000;
+			hex0 <= 8'b11000000;  // display all 0
+			hex1 <= 8'b11000000;
+			hex2 <= 8'b11000000;
+			hex3 <= 8'b11000000;
 		end
 		
 		three:
@@ -169,24 +170,24 @@ begin
 				if (prev_score < hi_score)
 					hi_score <= prev_score;
 					
-				state = zero; // back to idle state
+				state <= zero; // back to idle state
 			end
 		
-			hex0 = 8'b11000000;  // display all 0
-			hex1 = 8'b11000000;
-			hex2 = 8'b11000000;
-			hex3 = 8'b11000000;
+			hex0 <= 8'b11000000;  // display all 0
+			hex1 <= 8'b11000000;
+			hex2 <= 8'b11000000;
+			hex3 <= 8'b11000000;
 		end
 		
 		four:
 		begin
 			if (four2zero) // when key 1 is released
-				state = zero;
+				state <= zero;
 			else begin
-			hex0 = hi0; // display high score
-			hex1 = hi1;
-			hex2 = hi2;
-			hex3 = hi3; end
+			hex0 <= hi0; // display high score
+			hex1 <= hi1;
+			hex2 <= hi2;
+			hex3 <= hi3; end
 		end
 	endcase
 end
