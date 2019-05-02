@@ -165,10 +165,10 @@ begin
 		three:
 		begin
 			if (three2zero) begin // once correct switch is flipped
-				prev_score <= elapsed - current_lfsr; // set score to time passed since light came on
+				prev_score = elapsed - current_lfsr; // set score to time passed since light came on
 				
 				if (prev_score < hi_score)
-					hi_score <= prev_score;
+					hi_score = prev_score;
 					
 				state <= zero; // back to idle state
 			end
