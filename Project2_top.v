@@ -77,7 +77,7 @@ assign two2three = (lfsr_met);
 
 assign three2zero = (SW == led_reg);
 
-assign four2zero = (KEY1 == 0);
+assign four2zero = (KEY1 == 1);
 
 ///////////////////////// always stuff /////////////////////////
 always @(posedge CLK_10MHZ)
@@ -185,11 +185,11 @@ begin
 		begin
 			if (four2zero) // when key 1 is released
 				state = zero;
-		
+			else begin
 			hex0 = hi0; // display high score
 			hex1 = hi1;
 			hex2 = hi2;
-			hex3 = hi3;
+			hex3 = hi3; end
 		end
 	endcase
 end
