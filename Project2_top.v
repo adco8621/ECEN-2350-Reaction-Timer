@@ -189,10 +189,10 @@ begin
 				state = zero; // back to idle state
 			end
 		
-			hex0 = pr0; // display score achieved
-			hex1 = pr1;
-			hex2 = pr2;
-			hex3 = pr3;
+			hex0 = 8'b11000000;  // display all 0
+			hex1 = 8'b11000000;
+			hex2 = 8'b11000000;
+			hex3 = 8'b11000000;
 		end
 		
 		four:
