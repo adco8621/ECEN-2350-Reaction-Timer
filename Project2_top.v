@@ -27,7 +27,7 @@ module Project2_top(
 //////////////// variables /////////////////////////////////////////////
 reg [2:0] state;                               // State
 reg [15:0] prev_score, hi_score ;              // Scores. 
-reg rst,lfsr_met, init;                        // to reset the counter, if the lfsr time val is met, var for initializing values
+reg lfsr_met, init;                            // lfsr time val met, var for initializing values
 wire msClk;                                    // clock in ms
 wire [13:0] elapsed;                           // ms passed
 wire [11:0] lfsrOut;                           // lfsr value
@@ -39,7 +39,7 @@ wire [15:0] hi_bcd,prev_bcd;                   // scores in BCD
 
 /////////////////////// other modules //////////////////////////////
 Clock_divider div (CLK_10MHZ,msClk);           // turns 10MHz into 1kHz
-counter c0 (msClk,rst,elapsed);                // counts ms passed
+counter c0 (msClk,elapsed);                    // counts ms passed
 lfsr lf (elapsed,lfsrOut);                     // lfsr
 
 dbldbl hi (hi_score,hi_bcd);                   // Binary to BCD Hi score
@@ -92,7 +92,6 @@ begin
 		state = zero;
 		prev_score = 9999; // max counter score so easy to beat
 		hi_score = 9999;
-		rst = 0;
 		lfsr_met = 0;
 		led_reg = 10'b0000000000;
 		init = 1;
@@ -118,8 +117,7 @@ begin
 		begin
 			if (one2two) begin // release key 0 to enter random timer mode
 				state = two;
-				current_lfsr <= lfsrOut; // takes current lfsr out for the random timer
-				rst <= 1; // resets counter
+				current_lfsr = lfsrOut; // takes current lfsr out for the random timer
 			end
 		
 			hex0 = 8'b11000000; // display all 0
@@ -130,7 +128,6 @@ begin
 		
 		two:
 		begin
-			rst = 0; // re-enabling counter
 			if (two2zero) // press key 1 to go back to idle state
 				state = zero;
 				
@@ -138,36 +135,26 @@ begin
 				state = one;
 				
 			else if (two2three) begin  // turn on a light based on lfsr value and reset counter
-				if(current_lfsr < 400)begin
+				if(current_lfsr < 400)
 					led_reg[0] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 400 && current_lfsr < 800)begin
+				else if(current_lfsr >= 400 && current_lfsr < 800)
 					led_reg[1] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 800 && current_lfsr < 1200)begin
+				else if(current_lfsr >= 800 && current_lfsr < 1200)
 					led_reg[2] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 1200 && current_lfsr < 1600)begin
+				else if(current_lfsr >= 1200 && current_lfsr < 1600)
 					led_reg[3] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 1600 && current_lfsr < 2000)begin
+				else if(current_lfsr >= 1600 && current_lfsr < 2000)
 					led_reg[4] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 2000 && current_lfsr < 2400)begin
+				else if(current_lfsr >= 2000 && current_lfsr < 2400)
 					led_reg[5] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 2400 && current_lfsr < 2800)begin
+				else if(current_lfsr >= 2400 && current_lfsr < 2800)
 					led_reg[6] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 2800 && current_lfsr < 3200)begin
+				else if(current_lfsr >= 2800 && current_lfsr < 3200)
 					led_reg[7] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 3200 && current_lfsr < 3600)begin
+				else if(current_lfsr >= 3200 && current_lfsr < 3600)
 					led_reg[8] = 1;
-					rst = 1;end
-				else if(current_lfsr >= 3600 && current_lfsr < 4000)begin
+				else if(current_lfsr >= 3600 && current_lfsr < 4000)
 					led_reg[9] = 1;
-					rst = 1;end
 				state = three;
 			end
 		
@@ -179,9 +166,8 @@ begin
 		
 		three:
 		begin
-			rst = 0; // re-enable counter
 			if (three2zero) begin // once correct switch is flipped
-				prev_score = elapsed; // set score to time passed since light came on (malfunctioning)
+				prev_score = elapsed - current_lfsr; // set score to time passed since light came on (malfunctioning)
 				
 				if(prev_score < hi_score) // check if new high score
 					hi_score = prev_score;
